@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+
+  # DBs
+
+  db_stars:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${DB_STARS_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${DB_STARS_POSTGRES_PASSWORD}
+      POSTGRES_DB: bp_db_stars
+    expose:
+      - "5432"
+    volumes:
+      - db_stars_data:/var/lib/postgresql/data
+      - ./dbs/stars/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - net_internal
+
+  db_stars_pgadmin:
+    image: dpage/pgadmin4:latest
+    expose:
+      - "8079"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${DB_STARS_PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${DB_STARS_PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_LISTEN_PORT: 8079
+    depends_on:
+      - db_stars
+    volumes:
+      - db_stars_pgadmin_data:/var/lib/pgadmin
+    networks:
+      - net_internal
+
+  # APIs
+
+  api_main:
+    build:
+      context: ./apis/main
+    expose:
+      - "8081"
+    depends_on:
+      - db_stars
+    environment:
+      DB_STARS_POSTGRES_USER: ${DB_STARS_POSTGRES_USER}
+      DB_STARS_POSTGRES_PASSWORD: ${DB_STARS_POSTGRES_PASSWORD}
+      DB_STARS_POSTGRES_DB: bp_db_stars
+      DB_STARS_POSTGRES_HOST: db_stars
+      DB_STARS_POSTGRES_PORT: 5432
+      API_MAIN_PORT: 8081
+    networks:
+      - net_internal
+
+  # PROXY
+  # Proxy is HTTP and binded locally. We assume that there is another top-level proxy that exposes data and handles HTTPS.
+
+  proxy:
+    image: nginx:latest
+    ports:
+      - "127.0.0.1:${PROXY_PORT}:80"
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - db_stars_pgadmin
+      - api_main
+    networks:
+      - net_internal
+
+networks:
+  net_internal:
+    driver: bridge
+
+volumes:
+  db_stars_data:
+  db_stars_pgadmin_data:
