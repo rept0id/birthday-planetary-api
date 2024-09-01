@@ -34,6 +34,20 @@ func main() {
 
 	router := gin.Default()
 
+	router.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusOK)
+			return
+		}
+
+		c.Next()
+	})
+
 	router.Any("/", func(c *gin.Context) {
 		c.String(200, "Welcome to Birthday Planetary Main API !")
 	})
