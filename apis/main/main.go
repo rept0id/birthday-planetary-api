@@ -34,6 +34,7 @@ func main() {
 
 	router := gin.Default()
 
+	// Instance : CORS
 	router.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
@@ -48,6 +49,7 @@ func main() {
 		c.Next()
 	})
 
+	// Instance : Root
 	router.Any("/", func(c *gin.Context) {
 		c.String(200, "Welcome to Birthday Planetary Main API !")
 	})
