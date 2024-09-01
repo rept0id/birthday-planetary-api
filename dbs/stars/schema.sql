@@ -2,7 +2,8 @@ CREATE TABLE stars (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     ly FLOAT, -- Light Years
-    ly_pm FLOAT -- Light Years Plus Minus
+    ly_pm FLOAT, -- Light Years Plus Minus
+    src VARCHAR(255)
 );
 
 CREATE TABLE stars_metakeys (
