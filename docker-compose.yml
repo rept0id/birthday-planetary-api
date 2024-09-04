@@ -12,6 +12,7 @@ services:
       POSTGRES_DB: bp_db_stars
     expose:
       - "5432"
+    restart: always
     volumes:
       - db_stars_data:/var/lib/postgresql/data
       - ./dbs/stars/schema.sql:/docker-entrypoint-initdb.d/schema.sql
@@ -28,6 +29,7 @@ services:
       PGADMIN_LISTEN_PORT: 8079
     depends_on:
       - db_stars
+    restart: always
     volumes:
       - db_stars_pgadmin_data:/var/lib/pgadmin
     networks:
@@ -49,6 +51,7 @@ services:
       DB_STARS_POSTGRES_HOST: db_stars
       DB_STARS_POSTGRES_PORT: 5432
       API_MAIN_PORT: 8081
+    restart: always
     networks:
       - net_internal
 
@@ -64,6 +67,7 @@ services:
     depends_on:
       - db_stars_pgadmin
       - api_main
+    restart: always
     networks:
       - net_internal
 
