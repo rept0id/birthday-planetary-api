@@ -1,3 +1,5 @@
+--- -- Schema -- ---
+
 CREATE TABLE stars (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -7,13 +9,19 @@ CREATE TABLE stars (
 
 CREATE TABLE stars_metakeys (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    name VARCHAR(255) NOT NULL,
+    public BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE star_meta (
     id SERIAL PRIMARY KEY,
-    public BOOLEAN DEFAULT FALSE,
     star_id INTEGER REFERENCES stars(id),
     metakey_id INTEGER REFERENCES stars_metakeys(id),
     value VARCHAR(255) NOT NULL
 );
+
+--- -- Schema Seed -- ---
+
+-- Schema Seed : stars_metakeys
+INSERT INTO stars_metakeys (name, public) VALUES ('src', FALSE);
+INSERT INTO stars_metakeys (name, public) VALUES ('wikipedia', TRUE);
